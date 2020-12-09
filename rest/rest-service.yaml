@@ -1,0 +1,15 @@
+##
+## You provide this
+##
+apiVersion: v1
+kind: Service
+metadata:
+  name: rest-svc
+spec:
+  selector:
+    app: frontend
+  ports:
+    - name: frontend
+      protocol: "TCP"
+      port: 5000
+      targetPort: 5000

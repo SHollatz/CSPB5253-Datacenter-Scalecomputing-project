@@ -1,0 +1,8 @@
+FROM tensorflow/serving
+
+RUN pip3 install --upgrade tensorflow pika redis jsonpickle requests
+
+WORKDIR /srv
+COPY worker-server.py drop-redis.py redis-list.py /srv/
+ENV FLASK_APP=worker-server.py
+CMD [ "python3", "worker-server.py"]
