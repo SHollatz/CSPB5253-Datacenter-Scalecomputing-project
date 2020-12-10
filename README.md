@@ -131,8 +131,10 @@ kubectl apply -f rest/rest-ingress.yaml
 To show changes in the database I have written a python script that can be executed interactivly inside the pod with the container ml-worker. I am going to execute it once before to show that the database is empty and once after a curl command is executed. The sample images are stored in a bucket on Google Cloud.<br>
 kubectl get podskubectl exec --stdin --tty <worker-deployment-pod> /bin/sh<br>
 run inside the pod:<br>
-python3 redis-list.pykubectl describe ingress frontend-ingressREST = 192.168.49.2<br>
-curl -d '{"url":"https://storage.googleapis.com/csci4253_project_images/fake_20804.png"}' -H "Content-Type: application/json" -X POST<br> http://$REST/scan/urlkubectl exec --stdin --tty <worker-deployment-pod> /bin/sh<br>
+python3 redis-list.py<br>
+kubectl describe ingress frontend-ingress<br>
+REST = 192.168.49.2<br>
+curl -d '{"url":"https://storage.googleapis.com/csci4253_project_images/fake_20804.png"}' -H "Content-Type: application/json" -X POST http://$REST/scan/urlkubectl exec --stdin --tty <worker-deployment-pod> /bin/sh<br><br>
 run inside the pod:<br>
 python3 redis-list.py<br>
 ### Debugging and Testing
