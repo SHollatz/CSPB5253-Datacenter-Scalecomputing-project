@@ -99,17 +99,17 @@ url: https://index.docker.io/v1/<br>
 minikube addons enable ingress<br>
 #### Creating the Tensorflow Serving Docker Image
 The model was saved in the Hierarchical Data Format H5, which contains multidimensional arrays of scientific data, but needs to become a tensorflow pb format in order to be used with tensorflow serving. A model saved in pb format contains the complete graph, including weights and computation. 
-import tensorflow as tf
-model = tf.keras.models.load_model("./model/vgg16_diff-nodiff_classification.h5")
-tf.keras.models.save_model(model, "./model/1/vgg16_diff-nodiff_classification.pb", save_format="tf")
-# directory '1' was added because tensorflow serving expects a version specification at that point.docker pull tensorflow/serving
-docker run -d --name serving_base tensorflow/serving
-docker cp ../model/vgg16_diff-nodiff_classification.pb serving_base:/models/vgg16_diff-nodiff_classification.pb
-docker commit --change "ENV MODEL_NAME vgg16_diff-nodiff_classification.pb" serving_base vgg16_diff-nodiff_classifier
+import tensorflow as tf<br>
+model = tf.keras.models.load_model("./model/vgg16_diff-nodiff_classification.h5")<br>
+tf.keras.models.save_model(model, "./model/1/vgg16_diff-nodiff_classification.pb", save_format="tf")<br>
+# directory '1' was added because tensorflow serving expects a version specification at that point.docker pull tensorflow/serving<br>
+docker run -d --name serving_base tensorflow/serving<br>
+docker cp ../model/vgg16_diff-nodiff_classification.pb serving_base:/models/vgg16_diff-nodiff_classification.pb<br>
+docker commit --change "ENV MODEL_NAME vgg16_diff-nodiff_classification.pb" serving_base vgg16_diff-nodiff_classifier<br>
 
-# pushing to docker hub
-docker tag d7bb33b5297e shollatz/vgg16_diff-nodiff_classifier:v1
-docker push shollatz/vgg16_diff-nodiff_classifier:v1
+pushing to docker hub<br>
+docker tag d7bb33b5297e shollatz/vgg16_diff-nodiff_classifier:v1<br>
+docker push shollatz/vgg16_diff-nodiff_classifier:v1<br>
 #### Starting Kubernete Pods, Deployments, Services and the Ingress
 
 
@@ -128,13 +128,13 @@ kubectl apply -f rest/rest-ingress.yaml
 ```
 
 ### Example Run Shown in Demo Video
-To show changes in the database I have written a python script that can be executed interactivly inside the pod with the container ml-worker. I am going to execute it once before to show that the database is empty and once after a curl command is executed. The sample images are stored in a bucket on Google Cloud.
-kubectl get podskubectl exec --stdin --tty <worker-deployment-pod> /bin/sh
-# run inside the pod:
-python3 redis-list.pykubectl describe ingress frontend-ingressREST = 192.168.49.2
-curl -d '{"url":"https://storage.googleapis.com/csci4253_project_images/fake_20804.png"}' -H "Content-Type: application/json" -X POST http://$REST/scan/urlkubectl exec --stdin --tty <worker-deployment-pod> /bin/sh
-# run inside the pod:
-python3 redis-list.py
+To show changes in the database I have written a python script that can be executed interactivly inside the pod with the container ml-worker. I am going to execute it once before to show that the database is empty and once after a curl command is executed. The sample images are stored in a bucket on Google Cloud.<br>
+kubectl get podskubectl exec --stdin --tty <worker-deployment-pod> /bin/sh<br>
+run inside the pod:<br>
+python3 redis-list.pykubectl describe ingress frontend-ingressREST = 192.168.49.2<br>
+curl -d '{"url":"https://storage.googleapis.com/csci4253_project_images/fake_20804.png"}' -H "Content-Type: application/json" -X POST<br> http://$REST/scan/urlkubectl exec --stdin --tty <worker-deployment-pod> /bin/sh<br>
+run inside the pod:<br>
+python3 redis-list.py<br>
 #### Debugging and Testing
 I used logging to provide information from every executing node in the system as well as error reporting. The service application was tested first with a few images both from a local file system as well as from a given url. The architecture was built component by component and debugged at every step along the way. It was ensured that the image information can be reproduced after
 scanning and storing. 
