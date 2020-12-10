@@ -2,9 +2,9 @@
 # Worker server
 #
 import codecs
-import face_recognition
 import hashlib
 import io
+import json
 import numpy as np
 import os
 import pickle
@@ -12,8 +12,11 @@ import pika
 import platform
 from PIL import Image
 import redis
+import requests
 import sys
 
+
+CLASSES = [ "blank", "good", "noxtal", "strong", "weak" ]
 
 hostname = platform.node()
 
@@ -22,8 +25,12 @@ hostname = platform.node()
 ##
 redisHost = os.getenv("REDIS_HOST") or "localhost"
 rabbitMQHost = os.getenv("RABBITMQ_HOST") or "localhost"
+tfservingHost = os.getenv("TFSERVING_HOST") or "localhost"
 
-print("Connecting to rabbitmq({}) and redis({})".format(rabbitMQHost,redisHost))
+modelUri = f"http://{tfservingHost}:8501/v1/models/vgg16_diff-nodiff_classification.pb:predict"
+
+print("Connecting to rabbitmq({}). redis({}) and tfserving({})".format(rabbitMQHost,redisHost, tfservingHost))
+print(f"modelUri: {modelUri}")
 
 # Initializes RabbitMQ connection
 def _getChannel():
@@ -68,30 +75,34 @@ def _processMessageCallback(ch, method, properties, body):
 
 def _processImage(ch, img_hash, img_name, img):
   print(f" [x] processing {img_name}.")
-  img_nparray = np.array(img.convert('RGB'))
-  # The worker should extract the list of faces in the image using face_recognition.face_encodings. 
-  unknown_face_encodings = face_recognition.face_encodings(img_nparray)
-  # Then, for each face in that list, you should add the face and corresponding image to the Redis database and then compare those faces to all other faces in each image the database. 
-  _log(ch, "worker", f" [x] Add to database HtoF {img_name} ({img_hash})")
-  face_encodings_pickled = [pickle.dumps(f) for f in unknown_face_encodings]
-  redisHashToFaceRec.sadd(img_hash, *face_encodings_pickled)
-  # For each image containing any matching face, you would add the images (hashes) of each image to the other such that eventually we can determine the set of images that contain matching faces.
-  for hash_bytes in redisHashToFaceRec.scan_iter():
-    hash = hash_bytes.decode("utf-8")  # hashes below are strings
-    if hash == img_hash:
-      continue
+  img_nparray = np.array(img.convert('L'))
+  # The worker should predict the image class
+  img_gray = np.expand_dims(img_nparray, axis=-1) 
+  img_to_predict = np.expand_dims(img_gray, axis=0)
+  
+  data = json.dumps({
+        'instances': img_to_predict.tolist()
+  })
+  # print("data:", data)
+  print("img_gray shape", img_gray.shape)
+  print("img_to_predict shape", img_to_predict.shape)
+  response = requests.post(modelUri, data=data.encode('utf-8'))
+  print("response: ", response)
+  print("response text: ", response.text)
+  result = json.loads(response.text)
+  predictions = np.squeeze(result['predictions'])
+  predicted_class = _getClassNameFromPredictions(predictions)
+  # Then, for each image, you should add the prediction and corresponding image to the Redis database. 
+  _log(ch, "worker", f" [x] Add to database HtoP {img_name} ({predicted_class})")
+  redisHashToPred.set(img_hash, predicted_class)
 
-    face_recs_pickled = redisHashToFaceRec.smembers(hash)
-    face_recs = [pickle.loads(f) for f in face_recs_pickled]
-
-    for unknown_face in unknown_face_encodings:
-      match_results = face_recognition.compare_faces(face_recs, unknown_face)
-      print(f'results: {match_results}')
-      if any(match_results):
-        _log(ch, "worker", f" [x] Found Match: {img_name}, img_hash: {img_hash}, existing hash: {hash}")
-        redisHashToHashSet.sadd(img_hash, hash)
-        redisHashToHashSet.sadd(hash, img_hash)
-
+def _getClassNameFromPredictions(predictions):
+  max_p = max(predictions)
+  for p, c in (zip(predictions, CLASSES)):
+    if p == max_p:
+      print("CLASS NAME: ", c, "prediction: ", p)
+      return c
+  return None
 
 def _addToSetValue(db, key, value):
   stored_set_bytes = db.get(key)
@@ -115,7 +126,6 @@ def configureRabbitMqReceiver():
 # Initialize Redis
 redisNameToHash = redis.Redis(host=redisHost, db=1)
 redisHashToName = redis.Redis(host=redisHost, db=2)
-redisHashToFaceRec = redis.Redis(host=redisHost, db=3)
-redisHashToHashSet = redis.Redis(host=redisHost, db=4)
+redisHashToPred = redis.Redis(host=redisHost, db=3)
 
 configureRabbitMqReceiver()

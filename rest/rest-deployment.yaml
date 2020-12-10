@@ -34,5 +34,7 @@ spec:
           value: rabbitmq
         - name: FLASK_PORT
           value: "5000"
+        - name: TFSERVING_HOST
+          value: tfserving
         ports:
         - containerPort: 5000

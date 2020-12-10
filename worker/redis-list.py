@@ -5,8 +5,8 @@ import redis
 redisHost = os.getenv("REDIS_HOST") or "localhost"
 redisNameToHash = redis.Redis(host=redisHost, db=1)
 redisHashToName = redis.Redis(host=redisHost, db=2)
-redisHashToFaceRec = redis.Redis(host=redisHost, db=3)
-redisHashToHashSet = redis.Redis(host=redisHost, db=4)
+redisHashToPred = redis.Redis(host=redisHost, db=3)
+
 print()
 print('--- redisHashToFile-----------------------------------------------------------')
 for key in redisHashToName.scan_iter():
@@ -18,15 +18,9 @@ for key in redisNameToHash.scan_iter():
   value = redisNameToHash.get(key)
   print(f'{key} hash: {value}')
 print()
-print('--- redisHashToFaceRec -----------------------------------------------------------')
-for key in redisHashToFaceRec.scan_iter():
-  members = redisHashToFaceRec.smembers(key)
-  print(f'{key} faces: {len(members)}')
+print('--- redisHashToPred -----------------------------------------------------------')
+for key in redisHashToPred.scan_iter():
+  class_name = redisHashToPred.get(key)
+  print(f'{key} class: {class_name}')
   # for member in redisHashToFaceRec.smembers(key):
   #   print(key, pickle.loads(member))
-
-print()
-print('--- redisHashToHashSet -----------------------------------------------------------')
-for key in redisHashToHashSet.scan_iter():
-  members = redisHashToHashSet.smembers(key)
-  print(f'{key} hashes: {members}')

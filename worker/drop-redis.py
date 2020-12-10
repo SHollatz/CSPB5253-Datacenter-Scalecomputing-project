@@ -4,13 +4,12 @@ import redis
 redisHost = os.getenv("REDIS_HOST") or "localhost"
 redisNameToHash = redis.Redis(host=redisHost, db=1)
 redisHashToName = redis.Redis(host=redisHost, db=2)
-redisHashToFaceRec = redis.Redis(host=redisHost, db=3)
-redisHashToHashSet = redis.Redis(host=redisHost, db=4)
+redisHashToPred = redis.Redis(host=redisHost, db=3)
 
 def printInfo(context):
-  for db in [redisNameToHash, redisHashToName, redisHashToFaceRec, redisHashToHashSet]:
+  for db in [redisNameToHash, redisHashToName, redisHashToPred]:
     print(f'{context}: SIZE: {db.dbsize()}; DB: {db}')
 
 printInfo('before')
-redisHashToFaceRec.flushall()
+redisHashToPred.flushall()
 printInfo(' after')

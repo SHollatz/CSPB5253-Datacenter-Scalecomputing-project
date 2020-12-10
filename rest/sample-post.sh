@@ -8,10 +8,10 @@
 #
 REST=${REST:-"localhost:5000"}
 REST=${REST:-"10.107.192.176:5000"} # external ip of exposed deployment
-REST=${REST:-"192.168.49.2:5000"} # minikube ip
-REST=${REST:-"172.17.0.14:5000"} # frontend-ingress
+REST=${REST:-"192.168.49.2"} # minikube ip
+REST=${REST:-"172.17.0.10:5000"} # frontend-ingress
 
-curl -d '{"url":"https://storage.googleapis.com/csci4253_project_images/fake_22313"}' -H "Content-Type: application/json" -X POST http://$REST/scan/url
+curl -d '{"url":"https://storage.googleapis.com/csci4253_project_images/fake_20801.png"}' -H "Content-Type: application/json" -X POST http://$REST/scan/url
 #
 # This should match the one above
 curl http://$REST/match/2474a9def68909b1cc0c7bae2c87c054de14d136d18fdf573d262b511fba72c3
