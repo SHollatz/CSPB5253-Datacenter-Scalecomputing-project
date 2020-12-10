@@ -1,4 +1,3 @@
-# CSPB5253-Datacenter-Scalecomputing-project
 # Implementation of a Distributed Image Classifier to Separate Useful from Useless Images in Crystallographic Experiments
 #### Author: Sabine Hollatz
 Git Repository: https://github.com/SHollatz/CSPB5253-Datacenter-Scalecomputing-project
@@ -11,7 +10,7 @@ detected diffraction pattern can provide insight to the molecular structure of a
 protein molecule. [The following image was provided by Luigi Nardi](https://dawn.cs.stanford.edu/2019/04/23/deepfreak/)<img src="./demo-images/crystallography_example.png"> <br>This is how many protein, RNA, and DNA structures were
 discovered such as lysozyme or the zika virus shell. When a molecular structure is
 discovered, the proteins functionality can be understood and, in case of pathogens,
-medication can be developed. [This video provides a brief overview of the way the experiments are conducted](https://youtu.be/mYz3KEDQDwQ). Crystallographic experiments are currently deducted
+medication can be developed. The video below provides a brief overview of the way the experiments are conducted. Crystallographic experiments are currently deducted
 with the recent coronavirus 2 (SARS-CoV-2). [More information to Covid-19 research at SLAC](https://www.iucr.org/news/newsletter/volume-28/number-2/ssrl-joins-global-fight-against-covid-19)<br>
 Machine Learning is requested, because current detectors can take thousands of
 images per second, so that a pre-screening for quality by the human eye is not
@@ -20,6 +19,27 @@ potential success or failure of an experiment in real time. This is particularly
 serial crystallography, where proteins are used that are difficult to crystallize, so that
 the protein sample size is small. Therefore the number of useful images is small as
 well, but the number of total images is large.
+
+
+
+```python
+from IPython.lib.display import YouTubeVideo
+YouTubeVideo('mYz3KEDQDwQ')
+# Link: https://youtu.be/mYz3KEDQDwQ
+```
+
+
+
+
+
+<iframe
+    width="400"
+    height="300"
+    src="https://www.youtube.com/embed/mYz3KEDQDwQ"
+    frameborder="0"
+    allowfullscreen
+></iframe>
+
 
 
 
@@ -32,7 +52,7 @@ structure. The current training and testing images are simulated with James Holt
 
 ```python
 from IPython.display import HTML, display
-display(HTML("<table>Images without Diffraction (blank or no crystal)<tr><td><img width='250' src='https://github.com/SHollatz/CSPB5253-Datacenter-Scalecomputing-project/blob/main/demo-images/blank.png'></td><td><img width='200' src='demo-images/fake_20815_noxtal.png'></td><td><img width='200' src='demo-images/fake_20801_blank_withairscatter.png'></td></tr></table>"))
+display(HTML("<table>Images without Diffraction (blank or no crystal)<tr><td><img width='250' src='demo-images/blank.png'></td><td><img width='200' src='demo-images/fake_20815_noxtal.png'></td><td><img width='200' src='demo-images/fake_20801_blank_withairscatter.png'></td></tr></table>"))
 
 ```
 
@@ -72,24 +92,38 @@ Kubernetes is used with Docker Containers on a local Minikube cluster. Pods are 
 These steps need to be performed from command line and not in a jupyter notebook. For this reason they are shown as text instead of executable code.
 
 #### Starting the minikube cluster
-minikube start<br>
-minikube addons configure registry-creds<br>
-url: https://index.docker.io/v1/<br>
-minikube addons enable ingress<br>
-#### Creating the Tensorflow Serving Docker Image
-The model was saved in the Hierarchical Data Format H5, which contains multidimensional arrays of scientific data, but needs to become a tensorflow pb format in order to be used with tensorflow serving. A model saved in pb format contains the complete graph, including weights and computation. <br>
-import tensorflow as tf<br>
-model = tf.keras.models.load_model("./model/vgg16_diff-nodiff_classification.h5")<br>
-tf.keras.models.save_model(model, "./model/1/vgg16_diff-nodiff_classification.pb", save_format="tf")<br>
-directory '1' was added because tensorflow serving expects a version specification at that point.<br><br>
-docker pull tensorflow/serving<br>
-docker run -d --name serving_base tensorflow/serving<br>
-docker cp ../model/vgg16_diff-nodiff_classification.pb serving_base:/models/vgg16_diff-nodiff_classification.pb<br>
-docker commit --change "ENV MODEL_NAME vgg16_diff-nodiff_classification.pb" serving_base vgg16_diff-nodiff_classifier<br>
 
-pushing to docker hub<br>
-docker tag d7bb33b5297e shollatz/vgg16_diff-nodiff_classifier:v1<br>
-docker push shollatz/vgg16_diff-nodiff_classifier:v1<br>
+
+```python
+minikube start
+minikube addons configure registry-creds
+# https://index.docker.io/v1/
+minikube addons enable ingress
+```
+
+#### Creating the Tensorflow Serving Docker Image
+The model was saved in the Hierarchical Data Format H5, which contains multidimensional arrays of scientific data, but needs to become a tensorflow pb format in order to be used with tensorflow serving. A model saved in pb format contains the complete graph, including weights and computation. 
+
+
+```python
+import tensorflow as tf
+model = tf.keras.models.load_model("./model/vgg16_diff-nodiff_classification.h5")
+tf.keras.models.save_model(model, "./model/1/vgg16_diff-nodiff_classification.pb", save_format="tf")
+# directory '1' was added because tensorflow serving expects a version specification at that point.
+```
+
+
+```python
+docker pull tensorflow/serving
+docker run -d --name serving_base tensorflow/serving
+docker cp ../model/vgg16_diff-nodiff_classification.pb serving_base:/models/vgg16_diff-nodiff_classification.pb
+docker commit --change "ENV MODEL_NAME vgg16_diff-nodiff_classification.pb" serving_base vgg16_diff-nodiff_classifier
+
+# pushing to docker hub
+docker tag d7bb33b5297e shollatz/vgg16_diff-nodiff_classifier:v1
+docker push shollatz/vgg16_diff-nodiff_classifier:v1
+```
+
 #### Starting Kubernete Pods, Deployments, Services and the Ingress
 
 
@@ -108,18 +142,39 @@ kubectl apply -f rest/rest-ingress.yaml
 ```
 
 ### Example Run Shown in Demo Video
-To show changes in the database I have written a python script that can be executed interactivly inside the pod with the container ml-worker. I am going to execute it once before to show that the database is empty and once after a curl command is executed. The sample images are stored in a bucket on Google Cloud.<br>
-kubectl get pods<br>
-kubectl exec --stdin --tty 'worker-deployment-pod' /bin/sh<br>
-run inside the pod:<br>
-python3 redis-list.py<br>
-kubectl describe ingress frontend-ingress<br>
-REST = 192.168.49.2<br>
-curl -d '{"url":"https://storage.googleapis.com/csci4253_project_images/fake_20804.png"}' -H "Content-Type: application/json" -X POST http://$REST/scan/url<br>
-kubectl exec --stdin --tty 'worker-deployment-pod' /bin/sh<br><br>
-run inside the pod:<br>
-python3 redis-list.py<br>
-### Debugging and Testing
+To show changes in the database I have written a python script that can be executed interactivly inside the pod with the container ml-worker. I am going to execute it once before to show that the database is empty and once after a curl command is executed. The sample images are stored in a bucket on Google Cloud.
+
+
+```python
+kubectl get pods
+```
+
+
+```python
+kubectl exec --stdin --tty <worker-deployment-pod> /bin/sh
+# run inside the pod:
+python3 redis-list.py
+```
+
+
+```python
+kubectl describe ingress frontend-ingress
+```
+
+
+```python
+REST = 192.168.49.2
+curl -d '{"url":"https://storage.googleapis.com/csci4253_project_images/fake_20804.png"}' -H "Content-Type: application/json" -X POST http://$REST/scan/url
+```
+
+
+```python
+kubectl exec --stdin --tty <worker-deployment-pod> /bin/sh
+# run inside the pod:
+python3 redis-list.py
+```
+
+#### Debugging and Testing
 I used logging to provide information from every executing node in the system as well as error reporting. The service application was tested first with a few images both from a local file system as well as from a given url. The architecture was built component by component and debugged at every step along the way. It was ensured that the image information can be reproduced after
 scanning and storing. 
 
