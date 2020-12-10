@@ -102,7 +102,8 @@ The model was saved in the Hierarchical Data Format H5, which contains multidime
 import tensorflow as tf<br>
 model = tf.keras.models.load_model("./model/vgg16_diff-nodiff_classification.h5")<br>
 tf.keras.models.save_model(model, "./model/1/vgg16_diff-nodiff_classification.pb", save_format="tf")<br>
-directory '1' was added because tensorflow serving expects a version specification at that point.docker pull tensorflow/serving<br><br>
+directory '1' was added because tensorflow serving expects a version specification at that point.<br><br>
+docker pull tensorflow/serving<br>
 docker run -d --name serving_base tensorflow/serving<br>
 docker cp ../model/vgg16_diff-nodiff_classification.pb serving_base:/models/vgg16_diff-nodiff_classification.pb<br>
 docker commit --change "ENV MODEL_NAME vgg16_diff-nodiff_classification.pb" serving_base vgg16_diff-nodiff_classifier<br>
