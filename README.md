@@ -11,7 +11,7 @@ detected diffraction pattern can provide insight to the molecular structure of a
 protein molecule. [The following image was provided by Luigi Nardi](https://dawn.cs.stanford.edu/2019/04/23/deepfreak/)<img src="./demo-images/crystallography_example.png"> <br>This is how many protein, RNA, and DNA structures were
 discovered such as lysozyme or the zika virus shell. When a molecular structure is
 discovered, the proteins functionality can be understood and, in case of pathogens,
-medication can be developed. The video below provides a brief overview of the way the experiments are conducted. Crystallographic experiments are currently deducted
+medication can be developed. [This video provides a brief overview of the way the experiments are conducted](https://youtu.be/mYz3KEDQDwQ). Crystallographic experiments are currently deducted
 with the recent coronavirus 2 (SARS-CoV-2). [More information to Covid-19 research at SLAC](https://www.iucr.org/news/newsletter/volume-28/number-2/ssrl-joins-global-fight-against-covid-19)<br>
 Machine Learning is requested, because current detectors can take thousands of
 images per second, so that a pre-screening for quality by the human eye is not
@@ -20,27 +20,6 @@ potential success or failure of an experiment in real time. This is particularly
 serial crystallography, where proteins are used that are difficult to crystallize, so that
 the protein sample size is small. Therefore the number of useful images is small as
 well, but the number of total images is large.
-
-
-
-```python
-from IPython.lib.display import YouTubeVideo 
-YouTubeVideo('mYz3KEDQDwQ')
-# Link: https://youtu.be/mYz3KEDQDwQ
-```
-
-
-
-
-
-<iframe
-    width="400"
-    height="300"
-    src="https://www.youtube.com/embed/mYz3KEDQDwQ"
-    frameborder="0"
-    allowfullscreen
-></iframe>
-
 
 
 
