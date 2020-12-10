@@ -24,7 +24,7 @@ well, but the number of total images is large.
 
 
 ```python
-from IPython.lib.display import YouTubeVideo
+from IPython.lib.display import YouTubeVideo 
 YouTubeVideo('mYz3KEDQDwQ')
 # Link: https://youtu.be/mYz3KEDQDwQ
 ```
@@ -93,10 +93,10 @@ Kubernetes is used with Docker Containers on a local Minikube cluster. Pods are 
 These steps need to be performed from command line and not in a jupyter notebook. For this reason they are shown as text instead of executable code.
 
 #### Starting the minikube cluster
-minikube start
-minikube addons configure registry-creds
-url: https://index.docker.io/v1/
-minikube addons enable ingress
+minikube start<br>
+minikube addons configure registry-creds<br>
+url: https://index.docker.io/v1/<br>
+minikube addons enable ingress<br>
 #### Creating the Tensorflow Serving Docker Image
 The model was saved in the Hierarchical Data Format H5, which contains multidimensional arrays of scientific data, but needs to become a tensorflow pb format in order to be used with tensorflow serving. A model saved in pb format contains the complete graph, including weights and computation. 
 import tensorflow as tf
