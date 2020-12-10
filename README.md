@@ -77,7 +77,7 @@ minikube addons configure registry-creds<br>
 url: https://index.docker.io/v1/<br>
 minikube addons enable ingress<br>
 #### Creating the Tensorflow Serving Docker Image
-The model was saved in the Hierarchical Data Format H5, which contains multidimensional arrays of scientific data, but needs to become a tensorflow pb format in order to be used with tensorflow serving. A model saved in pb format contains the complete graph, including weights and computation. 
+The model was saved in the Hierarchical Data Format H5, which contains multidimensional arrays of scientific data, but needs to become a tensorflow pb format in order to be used with tensorflow serving. A model saved in pb format contains the complete graph, including weights and computation. <br>
 import tensorflow as tf<br>
 model = tf.keras.models.load_model("./model/vgg16_diff-nodiff_classification.h5")<br>
 tf.keras.models.save_model(model, "./model/1/vgg16_diff-nodiff_classification.pb", save_format="tf")<br>
