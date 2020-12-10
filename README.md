@@ -95,7 +95,7 @@ These steps need to be performed from command line and not in a jupyter notebook
 #### Starting the minikube cluster
 minikube start
 minikube addons configure registry-creds
-# https://index.docker.io/v1/
+url: https://index.docker.io/v1/
 minikube addons enable ingress
 #### Creating the Tensorflow Serving Docker Image
 The model was saved in the Hierarchical Data Format H5, which contains multidimensional arrays of scientific data, but needs to become a tensorflow pb format in order to be used with tensorflow serving. A model saved in pb format contains the complete graph, including weights and computation. 
