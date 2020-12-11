@@ -52,7 +52,7 @@ display(HTML("<table>Diffraction Images<tr><td>weak diffraction<img width='220' 
 I have set up a scalable, distributed system that classifies diffraction images from
 crystallographic experiments into two categories: images that can provide valuable
 information (show diffraction) and images that are useless to the researcher (no
-diffraction). In the future I will optimize the throughput and enable more convenient query methods to the database.
+diffraction). 
 
 ### The Architecture
 <img src="project-finalArchitecture.png" alt="Final Project Architecture">
