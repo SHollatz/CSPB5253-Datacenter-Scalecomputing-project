@@ -1,6 +1,7 @@
 # Implementation of a Distributed Image Classifier to Separate Useful from Useless Images in Crystallographic Experiments
 #### Author: Sabine Hollatz
 Git Repository: https://github.com/SHollatz/CSPB5253-Datacenter-Scalecomputing-project
+Demo-Video: https://www.youtube.com/watch?v=pve4RXxNHXA&t=18s
 
 ### Background - The Research Context
 This project is part of my internship at the National Accelerator Laboratory SLAC with
